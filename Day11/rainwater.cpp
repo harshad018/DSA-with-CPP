@@ -3,10 +3,7 @@
 using namespace std;
 
 void trap(int heights[], int n) {
-    if (n <= 2) { // Edge case: Can't trap water with less than 3 bars
-        cout << "Water Trapped is: 0" << endl;
-        return;
-    }
+    if (n <= 2) { return;}
 
     int leftMax[20000], rightMax[20000];
 
@@ -23,13 +20,12 @@ void trap(int heights[], int n) {
     for (int i = n-2; i >= 0; i--) {
         rightMax[i] = max(rightMax[i+1], heights[i]);
     }
-
+    
     // --- PHASE 3: CALCULATE WATER ---
     int waterTrapped = 0;
     for (int i = 0; i < n; i++) {
         // The water level is limited by the shorter of the two tallest walls
-        // Since we included heights[i] in the Max arrays, this result 
-        // will never be negative.
+        
         waterTrapped += min(leftMax[i], rightMax[i]) - heights[i];
     }
 
