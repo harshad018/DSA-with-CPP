@@ -1,46 +1,37 @@
-#include<iostream>
-#include <climits>
-
+#include <iostream>
+#include <algorithm> // For max and min
 using namespace std;
 
- void trap(int heights[], int n){
-    int leftMax[20000],rightMax[20000];
-     leftMax[0] = heights[0];
-    rightMax[0] = heights[n-1];
-
-    for ( int i = 1; i < n; i++){
-        leftMax[i] = max ( leftMax[i-1], heights[i-1]);
-        
+void trap(int heights[], int n) {
+    if (n <= 2) { // Edge case: Can't trap water with less than 3 bars
+        cout << "Water Trapped is: 0" << endl;
+        return;
     }
 
-   
-    for( int  i = n-2; i >=0; i--){
-        rightMax[i] = max(rightMax[i+1], heights[i+1]);
-        
+    int leftMax[20000], rightMax[20000];
+
+    // --- PHASE 1: PRE-CALCULATE LEFT MAX ---
+    // At every index i, what is the highest wall from 0 to i?
+    leftMax[0] = heights[0];
+    for (int i = 1; i < n; i++) {
+        leftMax[i] = max(leftMax[i-1], heights[i]); 
     }
+
+    // --- PHASE 2: PRE-CALCULATE RIGHT MAX ---
+    // At every index i, what is the highest wall from i to n-1?
+    rightMax[n-1] = heights[n-1]; // Initialize the LAST element
+    for (int i = n-2; i >= 0; i--) {
+        rightMax[i] = max(rightMax[i+1], heights[i]);
+    }
+
+    // --- PHASE 3: CALCULATE WATER ---
     int waterTrapped = 0;
-   
-    
-    for ( int i = 0 ; i <n; i++){
-      int currWater = min(leftMax[i], rightMax[i]) - heights[i];
-        if ( currWater >= 0){
-            waterTrapped += currWater;
-        }
+    for (int i = 0; i < n; i++) {
+        // The water level is limited by the shorter of the two tallest walls
+        // Since we included heights[i] in the Max arrays, this result 
+        // will never be negative.
+        waterTrapped += min(leftMax[i], rightMax[i]) - heights[i];
     }
 
-    cout<<"Water Trapped is: "<<waterTrapped<<endl;
-   
- }
-
-int main(){
-
-
-    int heights[7] = {4,2,0,6,3,2,5};
-
-    int n = sizeof(heights)/sizeof(int);
-
-
-    trap(heights, n);
-
-    return 0;
+    cout << "Water Trapped is: " << waterTrapped << endl;
 }
